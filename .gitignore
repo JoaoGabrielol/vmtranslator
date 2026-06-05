@@ -1,0 +1,8 @@
+target/
+.idea/
+.vscode/
+*.class
+*.log
+*.out
+*.asm
+!.gitkeep
