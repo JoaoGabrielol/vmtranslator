@@ -22,12 +22,25 @@ public final class CodeWriter implements AutoCloseable {
         throw new UnsupportedOperationException("TODO: implementar operacoes aritmeticas/logicas");
     }
 
-    public void writePush(String segment, int index) {
-        throw new UnsupportedOperationException("TODO: implementar comando push");
+    public void writePush(String segment, int index) throws IOException {
+        if (!"constant".equals(segment)) {
+            throw new UnsupportedOperationException("Segmento push ainda nao implementado: " + segment);
+        }
+        writeComment("push constant " + index);
+        write(
+                "@" + index, "D=A", "@SP", "A=M", "M=D", "@SP", "M=M+1"
+        );
     }
 
-    public void writePop(String segment, int index) {
-        throw new UnsupportedOperationException("TODO: implementar comando pop");
+    public void writePop(String segment, int index) throws IOException {
+        if (!"local".equals(segment)) {
+            throw new UnsupportedOperationException("Segmento pop ainda nao implementado: " + segment);
+        }
+        writeComment("pop local " + index);
+        write(
+                "@" + index, "D=A", "@LCL", "D=M+D", "@R13", "M=D",
+                "@SP", "AM=M-1", "D=M", "@R13", "A=M", "M=D"
+        );
     }
 
     @Override
