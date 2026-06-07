@@ -38,22 +38,32 @@ public final class CodeWriter implements AutoCloseable {
     }
 
     public void writePush(String segment, int index) throws IOException {
-        if (!"constant".equals(segment)) {
-            throw new UnsupportedOperationException("Segmento push ainda nao implementado: " + segment);
+        writeComment("push " + segment + " " + index);
+        switch (segment) {
+            case "constant" -> write(
+                    "@" + index, "D=A", "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
+            case "local" -> write(
+                    "@" + index, "D=A", "@LCL", "A=M+D", "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
+            default -> throw new UnsupportedOperationException(
+                    "Segmento push ainda nao implementado: " + segment
+            );
         }
-        writeComment("push constant " + index);
-        write(
-                "@" + index, "D=A", "@SP", "A=M", "M=D", "@SP", "M=M+1"
-        );
     }
 
     public void writePop(String segment, int index) throws IOException {
-        if (!"local".equals(segment)) {
-            throw new UnsupportedOperationException("Segmento pop ainda nao implementado: " + segment);
-        }
-        writeComment("pop local " + index);
+        writeComment("pop " + segment + " " + index);
+        String base = switch (segment) {
+            case "local" -> "LCL";
+            case "argument" -> "ARG";
+            default -> throw new UnsupportedOperationException(
+                    "Segmento pop ainda nao implementado: " + segment
+            );
+        };
         write(
-                "@" + index, "D=A", "@LCL", "D=M+D", "@R13", "M=D",
+                "@" + index, "D=A", "@" + base, "D=M+D", "@R13", "M=D",
                 "@SP", "AM=M-1", "D=M", "@R13", "A=M", "M=D"
         );
     }
