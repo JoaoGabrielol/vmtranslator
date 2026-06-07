@@ -59,6 +59,10 @@ public final class CodeWriter implements AutoCloseable {
                     "@" + index, "D=A", "@THAT", "A=M+D", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
+            case "temp" -> write(
+                    "@" + index, "D=A", "@5", "D=A+D", "A=D", "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
             default -> throw new UnsupportedOperationException(
                     "Segmento push ainda nao implementado: " + segment
             );
@@ -67,6 +71,13 @@ public final class CodeWriter implements AutoCloseable {
 
     public void writePop(String segment, int index) throws IOException {
         writeComment("pop " + segment + " " + index);
+        if ("temp".equals(segment)) {
+            write(
+                    "@" + index, "D=A", "@5", "D=A+D", "@R13", "M=D",
+                    "@SP", "AM=M-1", "D=M", "@R13", "A=M", "M=D"
+            );
+            return;
+        }
         String base = switch (segment) {
             case "local" -> "LCL";
             case "argument" -> "ARG";
