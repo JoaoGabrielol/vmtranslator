@@ -1,4 +1,4 @@
-package vmtranslator.codewriter;
+package codewriter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -51,6 +51,14 @@ public final class CodeWriter implements AutoCloseable {
                     "@" + index, "D=A", "@ARG", "A=M+D", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
+            case "this" -> write(
+                    "@" + index, "D=A", "@THIS", "A=M+D", "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
+            case "that" -> write(
+                    "@" + index, "D=A", "@THAT", "A=M+D", "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
             default -> throw new UnsupportedOperationException(
                     "Segmento push ainda nao implementado: " + segment
             );
@@ -62,6 +70,8 @@ public final class CodeWriter implements AutoCloseable {
         String base = switch (segment) {
             case "local" -> "LCL";
             case "argument" -> "ARG";
+            case "this" -> "THIS";
+            case "that" -> "THAT";
             default -> throw new UnsupportedOperationException(
                     "Segmento pop ainda nao implementado: " + segment
             );

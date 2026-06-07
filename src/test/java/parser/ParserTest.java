@@ -1,4 +1,4 @@
-package vmtranslator.parser;
+package parser;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

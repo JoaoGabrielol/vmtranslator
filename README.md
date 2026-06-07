@@ -22,9 +22,9 @@ proximos commits.
 
 - Criacao da estrutura Maven com `pom.xml`
 - Criacao do `.gitignore`
-- Organizacao inicial dos pacotes:
-  - `vmtranslator.parser`
-  - `vmtranslator.codewriter`
+- Organizacao dos pacotes:
+  - `parser`
+  - `codewriter`
 - Criacao da classe principal `VMTranslator`
 - Inicio da classe `Parser`, responsavel por ler comandos de arquivos `.vm`
 - Criacao das classes `Command` e `CommandType` para representar comandos VM

@@ -42,7 +42,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>vmtranslator.VMTranslator</mainClass>
+                            <mainClass>VMTranslator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

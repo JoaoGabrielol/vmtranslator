@@ -1,4 +1,4 @@
-package vmtranslator.parser;
+package parser;
 
 public enum CommandType {
     C_ARITHMETIC,

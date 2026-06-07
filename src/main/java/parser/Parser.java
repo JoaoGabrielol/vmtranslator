@@ -1,4 +1,4 @@
-package vmtranslator.parser;
+package parser;
 
 import java.io.IOException;
 import java.nio.file.Files;

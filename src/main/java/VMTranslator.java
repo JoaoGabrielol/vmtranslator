@@ -1,9 +1,6 @@
-package vmtranslator;
-
-import vmtranslator.codewriter.CodeWriter;
-import vmtranslator.parser.Command;
-import vmtranslator.parser.CommandType;
-import vmtranslator.parser.Parser;
+import codewriter.CodeWriter;
+import parser.Command;
+import parser.Parser;
 
 import java.io.IOException;
 import java.nio.file.Path;
