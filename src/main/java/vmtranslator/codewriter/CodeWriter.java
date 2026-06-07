@@ -47,6 +47,10 @@ public final class CodeWriter implements AutoCloseable {
                     "@" + index, "D=A", "@LCL", "A=M+D", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
+            case "argument" -> write(
+                    "@" + index, "D=A", "@ARG", "A=M+D", "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
             default -> throw new UnsupportedOperationException(
                     "Segmento push ainda nao implementado: " + segment
             );
