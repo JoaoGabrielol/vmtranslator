@@ -8,6 +8,7 @@ import java.nio.file.Path;
 public final class CodeWriter implements AutoCloseable {
     private final Path output;
     private final BufferedWriter writer;
+    private int labelCounter;
 
     public CodeWriter(Path output) throws IOException {
         this.output = output;
@@ -54,6 +55,10 @@ public final class CodeWriter implements AutoCloseable {
     @Override
     public void close() throws IOException {
         writer.close();
+    }
+
+    protected String nextLabel(String prefix) {
+        return prefix + labelCounter++;
     }
 
     protected void writeComment(String command) throws IOException {
