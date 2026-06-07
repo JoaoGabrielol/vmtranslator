@@ -25,6 +25,12 @@ public final class CodeWriter implements AutoCloseable {
             case "add" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D+M");
             case "sub" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D-M");
             case "neg" -> write("@SP", "A=M", "A=A-1", "M=-M");
+            case "eq" -> writeCompare("JEQ");
+            case "gt" -> writeCompare("JGT");
+            case "lt" -> writeCompare("JLT");
+            case "and" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D&M");
+            case "or" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D|M");
+            case "not" -> write("@SP", "A=M", "A=A-1", "M=!M");
             default -> throw new UnsupportedOperationException(
                     "Comando aritmetico ainda nao implementado: " + command
             );
@@ -59,6 +65,22 @@ public final class CodeWriter implements AutoCloseable {
 
     protected String nextLabel(String prefix) {
         return prefix + labelCounter++;
+    }
+
+    private void writeCompare(String jumpCommand) throws IOException {
+        String trueLabel = nextLabel("TRUE");
+        String endLabel = nextLabel("END");
+        String subtraction = "JEQ".equals(jumpCommand) ? "D=D-M" : "D=M-D";
+
+        write(
+                "@SP", "AM=M-1", "D=M", "A=A-1", subtraction,
+                "@" + trueLabel, "D;" + jumpCommand,
+                "@SP", "A=M", "M=0",
+                "@" + endLabel, "0;JMP",
+                "(" + trueLabel + ")",
+                "@SP", "A=M", "M=-1",
+                "(" + endLabel + ")"
+        );
     }
 
     protected void writeComment(String command) throws IOException {
