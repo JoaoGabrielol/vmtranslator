@@ -18,8 +18,16 @@ public final class CodeWriter implements AutoCloseable {
         return output;
     }
 
-    public void writeArithmetic(String command) {
-        throw new UnsupportedOperationException("TODO: implementar operacoes aritmeticas/logicas");
+    public void writeArithmetic(String command) throws IOException {
+        writeComment(command);
+        switch (command) {
+            case "add" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D+M");
+            case "sub" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D-M");
+            case "neg" -> write("@SP", "A=M", "A=A-1", "M=-M");
+            default -> throw new UnsupportedOperationException(
+                    "Comando aritmetico ainda nao implementado: " + command
+            );
+        }
     }
 
     public void writePush(String segment, int index) throws IOException {
