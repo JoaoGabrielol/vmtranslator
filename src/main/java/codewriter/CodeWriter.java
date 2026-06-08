@@ -8,10 +8,12 @@ import java.nio.file.Path;
 public final class CodeWriter implements AutoCloseable {
     private final Path output;
     private final BufferedWriter writer;
+    private final String fileName;
     private int labelCounter;
 
     public CodeWriter(Path output) throws IOException {
         this.output = output;
+        this.fileName = fileNameWithoutExtension(output);
         this.writer = Files.newBufferedWriter(output);
     }
 
@@ -23,7 +25,7 @@ public final class CodeWriter implements AutoCloseable {
         writeComment(command);
         switch (command) {
             case "add" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D+M");
-            case "sub" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=D-M");
+            case "sub" -> write("@SP", "AM=M-1", "D=M", "A=A-1", "M=M-D");
             case "neg" -> write("@SP", "A=M", "A=A-1", "M=-M");
             case "eq" -> writeCompare("JEQ");
             case "gt" -> writeCompare("JGT");
@@ -44,23 +46,31 @@ public final class CodeWriter implements AutoCloseable {
                     "@" + index, "D=A", "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             case "local" -> write(
-                    "@" + index, "D=A", "@LCL", "A=M+D", "D=M",
+                    "@LCL", "D=M", "@" + index, "A=D+A", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             case "argument" -> write(
-                    "@" + index, "D=A", "@ARG", "A=M+D", "D=M",
+                    "@ARG", "D=M", "@" + index, "A=D+A", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             case "this" -> write(
-                    "@" + index, "D=A", "@THIS", "A=M+D", "D=M",
+                    "@THIS", "D=M", "@" + index, "A=D+A", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             case "that" -> write(
-                    "@" + index, "D=A", "@THAT", "A=M+D", "D=M",
+                    "@THAT", "D=M", "@" + index, "A=D+A", "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             case "temp" -> write(
-                    "@" + index, "D=A", "@5", "D=A+D", "A=D", "D=M",
+                    "@R" + tempAddress(index), "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
+            case "pointer" -> write(
+                    "@" + pointerSymbol(index), "D=M",
+                    "@SP", "A=M", "M=D", "@SP", "M=M+1"
+            );
+            case "static" -> write(
+                    "@" + staticSymbol(index), "D=M",
                     "@SP", "A=M", "M=D", "@SP", "M=M+1"
             );
             default -> throw new UnsupportedOperationException(
@@ -73,8 +83,19 @@ public final class CodeWriter implements AutoCloseable {
         writeComment("pop " + segment + " " + index);
         if ("temp".equals(segment)) {
             write(
-                    "@" + index, "D=A", "@5", "D=A+D", "@R13", "M=D",
-                    "@SP", "AM=M-1", "D=M", "@R13", "A=M", "M=D"
+                    "@SP", "AM=M-1", "D=M", "@R" + tempAddress(index), "M=D"
+            );
+            return;
+        }
+        if ("pointer".equals(segment)) {
+            write(
+                    "@SP", "AM=M-1", "D=M", "@" + pointerSymbol(index), "M=D"
+            );
+            return;
+        }
+        if ("static".equals(segment)) {
+            write(
+                    "@SP", "AM=M-1", "D=M", "@" + staticSymbol(index), "M=D"
             );
             return;
         }
@@ -88,7 +109,7 @@ public final class CodeWriter implements AutoCloseable {
             );
         };
         write(
-                "@" + index, "D=A", "@" + base, "D=M+D", "@R13", "M=D",
+                "@" + base, "D=M", "@" + index, "D=D+A", "@R13", "M=D",
                 "@SP", "AM=M-1", "D=M", "@R13", "A=M", "M=D"
         );
     }
@@ -105,17 +126,41 @@ public final class CodeWriter implements AutoCloseable {
     private void writeCompare(String jumpCommand) throws IOException {
         String trueLabel = nextLabel("TRUE");
         String endLabel = nextLabel("END");
-        String subtraction = "JEQ".equals(jumpCommand) ? "D=D-M" : "D=M-D";
 
         write(
-                "@SP", "AM=M-1", "D=M", "A=A-1", subtraction,
+                "@SP", "AM=M-1", "D=M", "A=A-1", "D=M-D",
                 "@" + trueLabel, "D;" + jumpCommand,
-                "@SP", "A=M", "M=0",
+                "@SP", "A=M-1", "M=0",
                 "@" + endLabel, "0;JMP",
                 "(" + trueLabel + ")",
-                "@SP", "A=M", "M=-1",
+                "@SP", "A=M-1", "M=-1",
                 "(" + endLabel + ")"
         );
+    }
+
+    private int tempAddress(int index) {
+        if (index < 0 || index > 7) {
+            throw new IllegalArgumentException("Indice do segmento temp deve estar entre 0 e 7: " + index);
+        }
+        return 5 + index;
+    }
+
+    private String pointerSymbol(int index) {
+        return switch (index) {
+            case 0 -> "THIS";
+            case 1 -> "THAT";
+            default -> throw new IllegalArgumentException("Indice do segmento pointer deve ser 0 ou 1: " + index);
+        };
+    }
+
+    private String staticSymbol(int index) {
+        return fileName + "." + index;
+    }
+
+    private String fileNameWithoutExtension(Path path) {
+        String name = path.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     protected void writeComment(String command) throws IOException {
