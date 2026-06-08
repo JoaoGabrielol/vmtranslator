@@ -93,3 +93,5 @@ Os seguintes testes do Project 07 foram usados para validar a implementacao:
 - `MemoryAccess/BasicTest`
 - `MemoryAccess/PointerTest`
 - `MemoryAccess/StaticTest`
+
+Optamos por Java 17 por familiaridade da equipe e por permitir uma organização modular do tradutor (parser e gerador de código). A linguagem oferece tipagem estática, boa manipulação de arquivos e integração com Maven e JUnit, o que facilita testes e manutenção do projeto.
