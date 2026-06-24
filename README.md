@@ -1,9 +1,11 @@
 # VMTranslator
 
-Implementacao da Parte 1 do VMTranslator, da disciplina de Compiladores.
+Implementacao das Partes 1 e 2 do VMTranslator, da disciplina de Compiladores.
 
 O projeto traduz comandos da linguagem VM do nand2tetris para Assembly Hack,
-contemplando comandos de acesso a memoria e operacoes aritmeticas/logicas.
+contemplando comandos de acesso a memoria, operacoes aritmeticas/logicas,
+controle de fluxo, funcoes, chamadas, retorno, bootstrap e traducao de
+multiplos arquivos `.vm` em um unico `.asm`.
 
 ## Integrantes
 
@@ -22,12 +24,25 @@ contemplando comandos de acesso a memoria e operacoes aritmeticas/logicas.
 - `src/main/java/VMTranslator.java`: ponto de entrada do tradutor
 - `src/test/java`: testes unitarios
 - `projects/07`: arquivos do Project 07 do nand2tetris usados para validacao
+- `projects/08`: arquivos do Project 08 usados para validar controle de fluxo e funcoes
 
 ## Escopo Implementado
+
+### Parte 1
 
 - Comandos `push` e `pop`
 - Segmentos `constant`, `local`, `argument`, `this`, `that`, `temp`, `pointer` e `static`
 - Operacoes `add`, `sub`, `neg`, `eq`, `gt`, `lt`, `and`, `or` e `not`
+
+### Parte 2
+
+- Controle de fluxo: `label`, `goto` e `if-goto`
+- Declaracao de funcoes com `function`
+- Chamada de funcoes com `call`
+- Retorno de funcoes com `return`
+- Bootstrap com inicializacao de `SP=256` e chamada de `Sys.init`
+- Entrada por diretorio com multiplos arquivos `.vm`
+- Prefixo correto para variaveis `static` em traducao multi-arquivo
 
 ## Como Compilar
 
@@ -45,24 +60,33 @@ target/vmtranslator-1.0.0.jar
 
 ## Como Executar
 
-Use o `.jar` gerado, passando um arquivo `.vm` como entrada:
+Use o `.jar` gerado, passando um arquivo `.vm` ou um diretorio como entrada:
 
 ```powershell
 java -jar target\vmtranslator-1.0.0.jar caminho\para\Arquivo.vm
+java -jar target\vmtranslator-1.0.0.jar caminho\para\Diretorio
 ```
 
-O tradutor gera um arquivo `.asm` na mesma pasta do arquivo `.vm`.
+Quando a entrada e um arquivo `.vm`, o tradutor gera um `.asm` com o mesmo nome.
+Quando a entrada e um diretorio, todos os `.vm` diretos desse diretorio sao
+traduzidos em ordem alfabetica para `<nomeDoDiretorio>.asm`.
+
+Para diretorios que contem `Sys.vm`, o tradutor escreve o bootstrap antes dos
+comandos VM. Isso atende os testes com `Sys.init` sem interferir nos testes que
+ja inicializam a pilha pelo script `.tst`.
 
 ## Exemplo de Uso
 
 ```powershell
 java -jar target\vmtranslator-1.0.0.jar projects\07\StackArithmetic\SimpleAdd\SimpleAdd.vm
+java -jar target\vmtranslator-1.0.0.jar projects\08\FunctionCalls\NestedCall
 ```
 
 Saida gerada:
 
 ```text
 projects/07/StackArithmetic/SimpleAdd/SimpleAdd.asm
+projects/08/FunctionCalls/NestedCall/NestedCall.asm
 ```
 
 ## Como Validar no CPUEmulator
