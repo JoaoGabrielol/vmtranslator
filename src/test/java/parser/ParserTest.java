@@ -61,4 +61,51 @@ class ParserTest {
         assertEquals("constant", command.arg1());
         assertEquals(3, command.arg2());
     }
+
+    @Test
+    void parsesPart2FlowAndFunctionCommands() throws IOException {
+        Path file = tempDir.resolve("Part2.vm");
+        Files.writeString(file, """
+                label LOOP
+                goto LOOP
+                if-goto LOOP
+                function Sys.init 0
+                call Sys.main 2
+                return
+                """);
+
+        Parser parser = new Parser(file);
+
+        Command label = parser.advance();
+        assertEquals(CommandType.C_LABEL, label.type());
+        assertEquals("LOOP", label.arg1());
+        assertEquals(-1, label.arg2());
+
+        Command gotoCmd = parser.advance();
+        assertEquals(CommandType.C_GOTO, gotoCmd.type());
+        assertEquals("LOOP", gotoCmd.arg1());
+        assertEquals(-1, gotoCmd.arg2());
+
+        Command ifGoto = parser.advance();
+        assertEquals(CommandType.C_IF, ifGoto.type());
+        assertEquals("LOOP", ifGoto.arg1());
+        assertEquals(-1, ifGoto.arg2());
+
+        Command function = parser.advance();
+        assertEquals(CommandType.C_FUNCTION, function.type());
+        assertEquals("Sys.init", function.arg1());
+        assertEquals(0, function.arg2());
+
+        Command call = parser.advance();
+        assertEquals(CommandType.C_CALL, call.type());
+        assertEquals("Sys.main", call.arg1());
+        assertEquals(2, call.arg2());
+
+        Command returnCmd = parser.advance();
+        assertEquals(CommandType.C_RETURN, returnCmd.type());
+        assertEquals("", returnCmd.arg1());
+        assertEquals(-1, returnCmd.arg2());
+
+        assertFalse(parser.hasMoreCommands());
+    }
 }
