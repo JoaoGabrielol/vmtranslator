@@ -8,7 +8,7 @@ import java.nio.file.Path;
 public final class CodeWriter implements AutoCloseable {
     private final Path output;
     private final BufferedWriter writer;
-    private final String fileName;
+    private String fileName;
     private String currentFunction = "";
     private int labelCounter;
 
@@ -20,6 +20,10 @@ public final class CodeWriter implements AutoCloseable {
 
     public Path output() {
         return output;
+    }
+
+    public void setFileName(String name) {
+        this.fileName = fileNameWithoutExtension(name);
     }
 
     public void writeArithmetic(String command) throws IOException {
@@ -188,7 +192,10 @@ public final class CodeWriter implements AutoCloseable {
     }
 
     private String fileNameWithoutExtension(Path path) {
-        String name = path.getFileName().toString();
+        return fileNameWithoutExtension(path.getFileName().toString());
+    }
+
+    private String fileNameWithoutExtension(String name) {
         int dot = name.lastIndexOf('.');
         return dot > 0 ? name.substring(0, dot) : name;
     }
