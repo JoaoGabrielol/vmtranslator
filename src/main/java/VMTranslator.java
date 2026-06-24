@@ -44,6 +44,9 @@ public final class VMTranslator {
         Path output = directory.resolve(dirName + ".asm");
 
         try (CodeWriter writer = new CodeWriter(output)) {
+            if (containsSysVm(vmFiles)) {
+                writer.writeBootstrap();
+            }
             for (Path vmFile : vmFiles) {
                 translateInto(writer, vmFile);
             }
@@ -57,6 +60,7 @@ public final class VMTranslator {
     }
 
     private static void translateInto(CodeWriter writer, Path vmFile) throws IOException {
+        writer.setFileName(vmFile.getFileName().toString());
         Parser parser = new Parser(vmFile);
         while (parser.hasMoreCommands()) {
             emitCommand(writer, parser.advance());
@@ -71,9 +75,9 @@ public final class VMTranslator {
             case C_LABEL -> writer.writeLabel(command.arg1());
             case C_GOTO -> writer.writeGoto(command.arg1());
             case C_IF -> writer.writeIf(command.arg1());
-            case C_FUNCTION, C_CALL, C_RETURN -> throw new UnsupportedOperationException(
-                    "Comando ainda nao implementado no CodeWriter: " + command.type()
-            );
+            case C_FUNCTION -> writer.writeFunction(command.arg1(), command.arg2());
+            case C_CALL -> writer.writeCall(command.arg1(), command.arg2());
+            case C_RETURN -> writer.writeReturn();
         }
     }
 
@@ -84,6 +88,12 @@ public final class VMTranslator {
                     .sorted(Comparator.comparing(path -> path.getFileName().toString()))
                     .toList();
         }
+    }
+
+    private static boolean containsSysVm(List<Path> vmFiles) {
+        return vmFiles.stream()
+                .map(path -> path.getFileName().toString())
+                .anyMatch("Sys.vm"::equals);
     }
 
     private static Path asmPathForVmFile(Path input) {
