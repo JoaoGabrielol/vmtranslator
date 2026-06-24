@@ -69,6 +69,36 @@ public final class Parser {
             return new Command(type, segment, index, line, lineNumber);
         }
 
+        if ("label".equals(operation)) {
+            requireLength(parts, 2, lineNumber);
+            return new Command(CommandType.C_LABEL, parts[1], -1, line, lineNumber);
+        }
+
+        if ("goto".equals(operation)) {
+            requireLength(parts, 2, lineNumber);
+            return new Command(CommandType.C_GOTO, parts[1], -1, line, lineNumber);
+        }
+
+        if ("if-goto".equals(operation)) {
+            requireLength(parts, 2, lineNumber);
+            return new Command(CommandType.C_IF, parts[1], -1, line, lineNumber);
+        }
+
+        if ("function".equals(operation)) {
+            requireLength(parts, 3, lineNumber);
+            return new Command(CommandType.C_FUNCTION, parts[1], parseIndex(parts[2], lineNumber), line, lineNumber);
+        }
+
+        if ("call".equals(operation)) {
+            requireLength(parts, 3, lineNumber);
+            return new Command(CommandType.C_CALL, parts[1], parseIndex(parts[2], lineNumber), line, lineNumber);
+        }
+
+        if ("return".equals(operation)) {
+            requireLength(parts, 1, lineNumber);
+            return new Command(CommandType.C_RETURN, "", -1, line, lineNumber);
+        }
+
         throw error("Comando VM nao suportado '" + operation + "'", lineNumber);
     }
 
