@@ -65,4 +65,40 @@ class CodeWriterTest {
         assertFalse(asm.contains("D=M+D"));
         assertFalse(asm.contains("D=A+D"));
     }
+
+    @Test
+    void writesFlowControlWithoutFunctionPrefix() throws IOException {
+        Path output = tempDir.resolve("Flow.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.writeLabel("LOOP_START");
+            writer.writeGoto("LOOP_START");
+            writer.writeIf("LOOP_START");
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("(LOOP_START)"));
+        assertTrue(asm.contains("@LOOP_START"));
+        assertTrue(asm.contains("0;JMP"));
+        assertTrue(asm.contains("D;JNE"));
+        assertTrue(asm.contains("@SP"));
+        assertTrue(asm.contains("AM=M-1"));
+    }
+
+    @Test
+    void writesFlowControlWithFunctionPrefix() throws IOException {
+        Path output = tempDir.resolve("FlowFunction.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.setCurrentFunction("Sys.main");
+            writer.writeLabel("LOOP");
+            writer.writeGoto("LOOP");
+            writer.writeIf("LOOP");
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("(Sys.main$LOOP)"));
+        assertTrue(asm.contains("@Sys.main$LOOP"));
+        assertFalse(asm.contains("(LOOP)"));
+    }
 }

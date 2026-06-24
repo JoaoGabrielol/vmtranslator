@@ -9,6 +9,7 @@ public final class CodeWriter implements AutoCloseable {
     private final Path output;
     private final BufferedWriter writer;
     private final String fileName;
+    private String currentFunction = "";
     private int labelCounter;
 
     public CodeWriter(Path output) throws IOException {
@@ -114,6 +115,28 @@ public final class CodeWriter implements AutoCloseable {
         );
     }
 
+    public void writeLabel(String label) throws IOException {
+        writeComment("label " + label);
+        write("(" + flowLabel(label) + ")");
+    }
+
+    public void writeGoto(String label) throws IOException {
+        writeComment("goto " + label);
+        write("@" + flowLabel(label), "0;JMP");
+    }
+
+    public void writeIf(String label) throws IOException {
+        writeComment("if-goto " + label);
+        write(
+                "@SP", "AM=M-1", "D=M",
+                "@" + flowLabel(label), "D;JNE"
+        );
+    }
+
+    void setCurrentFunction(String function) {
+        this.currentFunction = function;
+    }
+
     @Override
     public void close() throws IOException {
         writer.close();
@@ -155,6 +178,13 @@ public final class CodeWriter implements AutoCloseable {
 
     private String staticSymbol(int index) {
         return fileName + "." + index;
+    }
+
+    private String flowLabel(String label) {
+        if (currentFunction.isEmpty()) {
+            return label;
+        }
+        return currentFunction + "$" + label;
     }
 
     private String fileNameWithoutExtension(Path path) {

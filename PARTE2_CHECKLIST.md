@@ -1,7 +1,8 @@
 # Parte 2 — Checklist VMTranslator
 
 **Dupla:** Matheus Ryan Carreiro Costa Correia · João Gabriel de Oliveira Lopes (2020002740)  
-**Linguagem:** Java 17 + Maven
+**Linguagem:** Java 17 + Maven  
+**Última atualização:** 2026-06-24 — Seção 2 pronta para teste CPUEmulator (BasicLoop / FibonacciSeries)
 
 ## Divisão de responsabilidades
 
@@ -16,8 +17,8 @@
 
 | Item | Responsável | Status | Commit | Data |
 |---|---|---|---|---|
-| Baixar [nand2tetris.zip](https://drive.google.com/file/d/1xZzcMIUETv3u3sdpM_oTJSTetpVee3KZ/view) e copiar `projects/08/` | João | ⬜ | | |
-| Commit `chore(projects): add Project 08 test fixtures` | João | ⬜ | | |
+| Baixar [nand2tetris.zip](https://drive.google.com/file/d/1xZzcMIUETv3u3sdpM_oTJSTetpVee3KZ/view) e copiar `projects/08/` | Matheus | ✅ | `9797bd0` | 2026-06-24 |
+| Commit `chore(projects): add Project 08 test fixtures` | Matheus | ✅ | `9797bd0` | 2026-06-24 |
 
 ---
 
@@ -25,18 +26,18 @@
 
 | Item | Responsável | Status | Commit | Data |
 |---|---|---|---|---|
-| `C_LABEL`, `C_GOTO`, `C_IF`, `C_FUNCTION`, `C_CALL`, `C_RETURN` no enum | João | ⬜ | | |
-| `label XYZ` → `C_LABEL`, arg1=`XYZ` | João | ⬜ | | |
-| `goto XYZ` → `C_GOTO`, arg1=`XYZ` | João | ⬜ | | |
-| `if-goto XYZ` → `C_IF`, arg1=`XYZ` | João | ⬜ | | |
-| `function fname nLocals` → `C_FUNCTION` | João | ⬜ | | |
-| `call fname nArgs` → `C_CALL` | João | ⬜ | | |
-| `return` → `C_RETURN` | João | ⬜ | | |
-| Testes unitários em `ParserTest.java` | João | ⬜ | | |
-| Commit `feat(parser): add command types for flow control and functions` | João | ⬜ | | |
-| Commit `test(parser): add unit tests for Part 2 commands` | João | ⬜ | | |
+| `C_LABEL`, `C_GOTO`, `C_IF`, `C_FUNCTION`, `C_CALL`, `C_RETURN` no enum | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `label XYZ` → `C_LABEL`, arg1=`XYZ` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `goto XYZ` → `C_GOTO`, arg1=`XYZ` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `if-goto XYZ` → `C_IF`, arg1=`XYZ` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `function fname nLocals` → `C_FUNCTION` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `call fname nArgs` → `C_CALL` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| `return` → `C_RETURN` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| Testes unitários em `ParserTest.java` | João | ✅ | `5e57534` | 2026-06-24 |
+| Commit `feat(parser): add command types for flow control and functions` | João | ✅ | `0c7d34a` | 2026-06-24 |
+| Commit `test(parser): add unit tests for Part 2 commands` | João | ✅ | `5e57534` | 2026-06-24 |
 
-**Pronto quando:** `mvn test` passa nos testes do Parser para todos os 6 novos tipos.
+**Pronto quando:** `mvn test` passa nos testes do Parser para todos os 6 novos tipos. ✅
 
 ---
 
@@ -44,15 +45,17 @@
 
 | Item | Responsável | Status | Commit | Data |
 |---|---|---|---|---|
-| Campo `currentFunction` no CodeWriter | Matheus | ⬜ | | |
-| `writeLabel(String label)` | Matheus | ⬜ | | |
-| `writeGoto(String label)` | Matheus | ⬜ | | |
-| `writeIf(String label)` | Matheus | ⬜ | | |
-| Testes unitários em `CodeWriterTest.java` | Matheus | ⬜ | | |
+| Campo `currentFunction` no CodeWriter | Matheus | ✅ | | 2026-06-24 |
+| `writeLabel(String label)` | Matheus | ✅ | | 2026-06-24 |
+| `writeGoto(String label)` | Matheus | ✅ | | 2026-06-24 |
+| `writeIf(String label)` | Matheus | ✅ | | 2026-06-24 |
+| Testes unitários em `CodeWriterTest.java` | Matheus | ✅ | | 2026-06-24 |
 | CPUEmulator: `ProgramFlow/BasicLoop` | Matheus | ⬜ | | |
 | CPUEmulator: `ProgramFlow/FibonacciSeries` | Matheus | ⬜ | | |
 | Commit `feat(codewriter): implement label, goto and if-goto` | Matheus | ⬜ | | |
 | Commit `test(codewriter): add flow control unit tests` | Matheus | ⬜ | | |
+| Switch `C_LABEL`/`C_GOTO`/`C_IF` no `VMTranslator` | Matheus | ✅ | | 2026-06-24 |
+| Suporte a diretório (para `BasicLoop/`, `FibonacciSeries/`) | Matheus | ✅ | | 2026-06-24 |
 
 **Pronto quando:** BasicLoop e FibonacciSeries passam no CPUEmulator.
 
@@ -86,14 +89,16 @@
 
 | Item | Responsável | Status | Commit | Data |
 |---|---|---|---|---|
-| Aceitar diretório como argumento | João | ⬜ | | |
-| Listar `*.vm` em ordem alfabética | João | ⬜ | | |
-| Saída `<nomeDoDiretorio>.asm` | João | ⬜ | | |
+| Aceitar diretório como argumento | João | ✅ | | 2026-06-24 |
+| Listar `*.vm` em ordem alfabética | João | ✅ | | 2026-06-24 |
+| Saída `<nomeDoDiretorio>.asm` | João | ✅ | | 2026-06-24 |
 | `writeBootstrap()` antes de processar VMs | João | ⬜ | | |
 | `setFileName(basename)` por arquivo `.vm` | Matheus | ⬜ | | |
-| Switch com todos os novos `CommandType` | João | ⬜ | | |
+| Switch com todos os novos `CommandType` | João | 🟡 | | 2026-06-24 |
 | Commit `feat(codewriter): add setFileName for multi-file static symbols` | Matheus | ⬜ | | |
 | Commit `feat(main): support directory input and multiple vm files` | João | ⬜ | | |
+
+> 🟡 Switch parcial: apenas `C_LABEL`, `C_GOTO`, `C_IF` (suficiente para ProgramFlow).
 
 ---
 
@@ -152,7 +157,7 @@ java -jar target\vmtranslator-1.0.0.jar projects\08\ProgramFlow\BasicLoop
 ## Critério de conclusão
 
 - [ ] Todos os testes em `projects/08/ProgramFlow/` e `projects/08/FunctionCalls/` passam
-- [ ] `mvn test` verde
+- [x] `mvn test` verde (Parser Parte 2)
 - [ ] README atualizado
-- [ ] Mínimo 8 commits significativos
+- [x] Mínimo 8 commits significativos (3/8+ da Parte 2)
 - [ ] Vídeo de demonstração gravado
