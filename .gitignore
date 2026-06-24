@@ -1,6 +1,7 @@
 target/
 .idea/
 .vscode/
+.cursor/
 *.class
 *.log
 *.out
