@@ -27,6 +27,12 @@ public final class CodeWriter implements AutoCloseable {
         this.fileName = fileNameWithoutExtension(name);
     }
 
+    public void writeBootstrap() throws IOException {
+        writeComment("bootstrap");
+        write("@256", "D=A", "@SP", "M=D");
+        writeCall("Sys.init", 0);
+    }
+
     public void writeArithmetic(String command) throws IOException {
         writeComment(command);
         switch (command) {

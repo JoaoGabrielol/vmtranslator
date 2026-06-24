@@ -120,6 +120,22 @@ class CodeWriterTest {
     }
 
     @Test
+    void writesBootstrapInitializingSpAndCallingSysInit() throws IOException {
+        Path output = tempDir.resolve("Bootstrap.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.writeBootstrap();
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("@256"));
+        assertTrue(asm.contains("@SP"));
+        assertTrue(asm.contains("M=D"));
+        assertTrue(asm.contains("@Sys.init"));
+        assertTrue(asm.contains("(Sys.init$ret.0)"));
+    }
+
+    @Test
     void writesFunctionLabelAndInitializesLocals() throws IOException {
         Path output = tempDir.resolve("Function.asm");
 
