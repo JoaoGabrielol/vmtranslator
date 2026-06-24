@@ -101,4 +101,86 @@ class CodeWriterTest {
         assertTrue(asm.contains("@Sys.main$LOOP"));
         assertFalse(asm.contains("(LOOP)"));
     }
+
+    @Test
+    void writesStaticSymbolsWithConfiguredFileName() throws IOException {
+        Path output = tempDir.resolve("Directory.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.setFileName("Sys.vm");
+            writer.writePush("static", 2);
+            writer.setFileName("Main");
+            writer.writePop("static", 4);
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("@Sys.2"));
+        assertTrue(asm.contains("@Main.4"));
+        assertFalse(asm.contains("@Directory.2"));
+    }
+
+    @Test
+    void writesFunctionLabelAndInitializesLocals() throws IOException {
+        Path output = tempDir.resolve("Function.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.writeFunction("SimpleFunction.test", 2);
+            writer.writeLabel("LOOP");
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("(SimpleFunction.test)"));
+        assertTrue(asm.contains("(SimpleFunction.test$LOOP)"));
+        assertTrue(occurrences(asm, "M=0") >= 2);
+    }
+
+    @Test
+    void writesCallFrameWithUniqueReturnLabel() throws IOException {
+        Path output = tempDir.resolve("Call.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.writeCall("Sys.main", 0);
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("@Sys.main$ret.0"));
+        assertTrue(asm.contains("(Sys.main$ret.0)"));
+        assertTrue(asm.contains("@LCL"));
+        assertTrue(asm.contains("@ARG"));
+        assertTrue(asm.contains("@THIS"));
+        assertTrue(asm.contains("@THAT"));
+        assertTrue(asm.contains("@5"));
+        assertTrue(asm.contains("@0"));
+        assertTrue(asm.contains("@Sys.main"));
+        assertTrue(asm.contains("0;JMP"));
+    }
+
+    @Test
+    void writesReturnRestoringCallerFrame() throws IOException {
+        Path output = tempDir.resolve("Return.asm");
+
+        try (CodeWriter writer = new CodeWriter(output)) {
+            writer.writeReturn();
+        }
+
+        String asm = Files.readString(output);
+        assertTrue(asm.contains("@R13"));
+        assertTrue(asm.contains("@R14"));
+        assertTrue(asm.contains("@THAT"));
+        assertTrue(asm.contains("@THIS"));
+        assertTrue(asm.contains("@ARG"));
+        assertTrue(asm.contains("@LCL"));
+        assertTrue(asm.contains("A=M"));
+        assertTrue(asm.contains("0;JMP"));
+    }
+
+    private static int occurrences(String text, String token) {
+        int count = 0;
+        int index = text.indexOf(token);
+        while (index >= 0) {
+            count++;
+            index = text.indexOf(token, index + token.length());
+        }
+        return count;
+    }
 }
