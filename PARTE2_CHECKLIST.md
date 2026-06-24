@@ -137,20 +137,37 @@
 
 ## Comandos
 
-```powershell
-# Compilar
-mvn clean package
+### Compilar (sem Maven — so precisa do JDK 17)
 
-# Testes unitários
-mvn test
-
-# Traduzir diretório (Parte 2)
-java -jar target\vmtranslator-1.0.0.jar projects\08\ProgramFlow\BasicLoop
-
-# Validar no CPUEmulator
-# Carregar projects\08\ProgramFlow\BasicLoop\BasicLoop.tst
-# Esperado: "End of script - Comparison ended successfully"
+**Git Bash** (seu terminal):
+```bash
+./build.sh
 ```
+
+**PowerShell / CMD:**
+```powershell
+.\build.bat
+```
+
+**Maven** (opcional, se tiver instalado):
+```powershell
+mvn clean package
+```
+
+### Traduzir e testar
+
+```bash
+java -jar target/vmtranslator-1.0.0.jar projects/08/ProgramFlow/BasicLoop
+java -jar target/vmtranslator-1.0.0.jar projects/08/ProgramFlow/FibonacciSeries
+```
+
+### Validar no CPUEmulator
+
+Carregar `projects/08/ProgramFlow/BasicLoop/BasicLoop.tst` → Run  
+Esperado: `End of script - Comparison ended successfully`
+
+> Se `java` ou `javac` nao for reconhecido, adicione o JDK ao PATH  
+> (ex.: `C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot\bin`)
 
 ---
 
