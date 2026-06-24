@@ -108,6 +108,22 @@ O teste passou quando aparecer a mensagem:
 End of script - Comparison ended successfully
 ```
 
+Para a Parte 2, gere os `.asm` nesta ordem recomendada:
+
+```powershell
+java -jar target\vmtranslator-1.0.0.jar projects\08\ProgramFlow\BasicLoop
+java -jar target\vmtranslator-1.0.0.jar projects\08\ProgramFlow\FibonacciSeries
+java -jar target\vmtranslator-1.0.0.jar projects\08\FunctionCalls\SimpleFunction
+java -jar target\vmtranslator-1.0.0.jar projects\08\FunctionCalls\NestedCall
+```
+
+Depois, abra no CPUEmulator o `.tst` correspondente a cada pasta:
+
+- `projects/08/ProgramFlow/BasicLoop/BasicLoop.tst`
+- `projects/08/ProgramFlow/FibonacciSeries/FibonacciSeries.tst`
+- `projects/08/FunctionCalls/SimpleFunction/SimpleFunction.tst`
+- `projects/08/FunctionCalls/NestedCall/NestedCall.tst`
+
 ## Testes Validados
 
 Os seguintes testes do Project 07 foram usados para validar a implementacao:
@@ -117,5 +133,12 @@ Os seguintes testes do Project 07 foram usados para validar a implementacao:
 - `MemoryAccess/BasicTest`
 - `MemoryAccess/PointerTest`
 - `MemoryAccess/StaticTest`
+
+Para a Parte 2, a validacao esperada cobre:
+
+- `ProgramFlow/BasicLoop`
+- `ProgramFlow/FibonacciSeries`
+- `FunctionCalls/SimpleFunction`
+- `FunctionCalls/NestedCall`
 
 Optamos por Java 17 por familiaridade da equipe e por permitir uma organização modular do tradutor (parser e gerador de código). A linguagem oferece tipagem estática, boa manipulação de arquivos e integração com Maven e JUnit, o que facilita testes e manutenção do projeto.
