@@ -11,6 +11,7 @@ public final class CodeWriter implements AutoCloseable {
     private String fileName;
     private String currentFunction = "";
     private int labelCounter;
+    private int callCounter;
 
     public CodeWriter(Path output) throws IOException {
         this.output = output;
@@ -137,6 +138,63 @@ public final class CodeWriter implements AutoCloseable {
         );
     }
 
+    public void writeFunction(String functionName, int localCount) throws IOException {
+        writeComment("function " + functionName + " " + localCount);
+        currentFunction = functionName;
+        write("(" + functionName + ")");
+        for (int i = 0; i < localCount; i++) {
+            write("@SP", "A=M", "M=0", "@SP", "M=M+1");
+        }
+    }
+
+    public void writeCall(String functionName, int argumentCount) throws IOException {
+        writeComment("call " + functionName + " " + argumentCount);
+        String returnLabel = functionName + "$ret." + callCounter++;
+
+        write(
+                "@" + returnLabel, "D=A"
+        );
+        pushD();
+        pushPointer("LCL");
+        pushPointer("ARG");
+        pushPointer("THIS");
+        pushPointer("THAT");
+        write(
+                "@SP", "D=M",
+                "@5", "D=D-A",
+                "@" + argumentCount, "D=D-A",
+                "@ARG", "M=D",
+                "@SP", "D=M",
+                "@LCL", "M=D",
+                "@" + functionName, "0;JMP",
+                "(" + returnLabel + ")"
+        );
+    }
+
+    public void writeReturn() throws IOException {
+        writeComment("return");
+        write(
+                "@LCL", "D=M",
+                "@R13", "M=D",
+                "@5", "A=D-A", "D=M",
+                "@R14", "M=D",
+                "@SP", "AM=M-1", "D=M",
+                "@ARG", "A=M", "M=D",
+                "@ARG", "D=M+1",
+                "@SP", "M=D",
+                "@R13", "AM=M-1", "D=M",
+                "@THAT", "M=D",
+                "@R13", "AM=M-1", "D=M",
+                "@THIS", "M=D",
+                "@R13", "AM=M-1", "D=M",
+                "@ARG", "M=D",
+                "@R13", "AM=M-1", "D=M",
+                "@LCL", "M=D",
+                "@R14", "A=M",
+                "0;JMP"
+        );
+    }
+
     void setCurrentFunction(String function) {
         this.currentFunction = function;
     }
@@ -189,6 +247,15 @@ public final class CodeWriter implements AutoCloseable {
             return label;
         }
         return currentFunction + "$" + label;
+    }
+
+    private void pushD() throws IOException {
+        write("@SP", "A=M", "M=D", "@SP", "M=M+1");
+    }
+
+    private void pushPointer(String pointer) throws IOException {
+        write("@" + pointer, "D=M");
+        pushD();
     }
 
     private String fileNameWithoutExtension(Path path) {
